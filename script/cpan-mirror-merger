@@ -1,0 +1,107 @@
+#!perl
+use strict;
+use warnings;
+
+use Getopt::Long qw/:config posix_default no_ignore_case bundling auto_help/;
+use Pod::Usage qw/pod2usage/;
+
+use CPAN::MirrorMerger;
+use CPAN::MirrorMerger::Agent;
+use CPAN::MirrorMerger::Mirror;
+use CPAN::MirrorMerger::MirrorCache;
+use CPAN::MirrorMerger::RetryPolicy;
+use CPAN::MirrorMerger::Algorithm::Simple;
+use CPAN::MirrorMerger::Logger::Stderr;
+use CPAN::MirrorMerger::Storage::Directory;
+
+GetOptions(
+    'verbose|v+'            => \my $verbose,
+    'output-dir|o=s'        => \my $output_dir,
+    'mirror-cache-dir=s'    => \my $mirror_cache_dir,
+    'index-cache-timeout=i' => \my $index_cache_timeout,
+    'request-timeout=i'     => \my $request_timeout,
+    'max-retries=i'         => \my $max_retries,
+    'retry-interval=f'      => \my $retry_interval,
+    'retry-jitter-factor=f' => \my $retry_jitter_factor,
+) or pod2usage(1);
+unless ($output_dir && -d $output_dir) {
+    pod2usage(1);
+}
+
+# set default
+$verbose             ||= 0;
+$mirror_cache_dir    ||= $CPAN::MirrorMerger::DEFAULT_MIRROR_CACHE_DIR;
+$index_cache_timeout ||= $CPAN::MirrorMerger::DEFAULT_MIRROR_INDEX_CACHE_TIMEOUT;
+$request_timeout     ||= $CPAN::MirrorMerger::DEFAULT_REQUEST_TIMEOUT;
+$max_retries         ||= $CPAN::MirrorMerger::DEFAULT_RETRY_POLICY->max_retries;
+$retry_interval      ||= $CPAN::MirrorMerger::DEFAULT_RETRY_POLICY->interval;
+$retry_jitter_factor ||= $CPAN::MirrorMerger::DEFAULT_RETRY_POLICY->jitter_factor;
+
+my $logger = CPAN::MirrorMerger::Logger::Stderr->new(
+    level => $verbose == 0 ? 'warn'
+           : $verbose == 1 ? 'info'
+           : $verbose >= 2 ? 'debug'
+           : 'warn'
+);
+
+my $retry_policy = CPAN::MirrorMerger::RetryPolicy->new(
+    max_retries   => $max_retries,
+    interval      => $retry_interval,
+    jitter_factor => $retry_jitter_factor,
+);
+
+my $agent = CPAN::MirrorMerger::Agent->new(
+    agent        => "CPAN::MirrorMerger/$CPAN::MirrorMerger::VERSION",
+    timeout      => $request_timeout,
+    logger       => $logger,
+    retry_policy => $retry_policy,
+);
+
+my $mirror_cache = CPAN::MirrorMerger::MirrorCache->new(
+    cache_dir           => $mirror_cache_dir,
+    index_cache_timeout => $index_cache_timeout,
+    agent               => $agent,
+    logger              => $logger,
+);
+
+my $algorithm = CPAN::MirrorMerger::Algorithm::Simple->new(
+    mirror_cache => $mirror_cache,
+    logger       => $logger,
+);
+
+my $merger = CPAN::MirrorMerger->new();
+for my $mirror_url (@ARGV) {
+    $merger->add_mirror($mirror_url);
+}
+$merger->merge($algorithm)->save(
+    CPAN::MirrorMerger::Storage::Directory->new(
+        path => $output_dir,
+    )
+);
+
+__END__
+
+=pod
+
+=head1 NAME
+
+cpan-mirror-merger - CPAN Mirror merge tool
+
+=head1 SYNOPSIS
+
+cpan-mirror-merger [options] [mirror_urls ...]
+
+ Options:
+   -h|--help                Brief help message
+   -v|--verbose             Verbose log
+   -o|--output-dir          Output directory (required)
+   --mirror-cache-dir       Mirror cache directory (default: /tmp/CPAN-MirrorMerger)
+   --index-cache-timeout    Mirror index cache timeout seconds (default: 300s)
+   --request-timeout        HTTP request timeout seconds (default: 5s)
+   --max-retries            Max retry count
+   --retry-interval         Retry interval
+   --retry-jitter=factor    Retry jitter factor
+
+=cut
+
+
