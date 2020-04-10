@@ -8,7 +8,7 @@ use Data::Dumper ();
 use Time::Moment;
 
 my %LEVEL_MAP = (
-    erorr => 1000,
+    error => 1000,
     warn  =>  500,
     info  =>  100,
     debug =>   10,
