@@ -97,7 +97,7 @@ cpan-mirror-merger [options] [mirror_urls ...]
    -o|--output-dir          Output directory (required)
    --mirror-cache-dir       Mirror cache directory (default: /tmp/CPAN-MirrorMerger)
    --index-cache-timeout    Mirror index cache timeout seconds (default: 300s)
-   --request-timeout        HTTP request timeout seconds (default: 5s)
+   --request-timeout        HTTP request timeout seconds (default: 10s)
    --max-retries            Max retry count
    --retry-interval         Retry interval
    --retry-jitter=factor    Retry jitter factor
