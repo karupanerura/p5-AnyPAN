@@ -26,6 +26,6 @@ cpan-mirror-merger [options] [mirror_urls ...]
    --request-timeout        HTTP request timeout seconds (default: 30s)
    --max-retries            Max retry count
    --retry-interval         Retry interval
-   --retry-jitter=factor    Retry jitter factor
+   --retry-jitter-factor    Retry jitter factor
 
 =cut
