@@ -22,7 +22,7 @@ our $DEFAULT_RETRY_POLICY = CPAN::MirrorMerger::RetryPolicy->new(
     interval      => 1,
     jitter_factor => 0.05,
 );
-our $DEFAULT_REQUEST_TIMEOUT = 10;
+our $DEFAULT_REQUEST_TIMEOUT = 30;
 our $DEFAULT_MIRROR_CACHE_DIR = File::Spec->catdir(File::Spec->tmpdir(), 'CPAN-MirrorMerger');
 our $DEFAULT_MIRROR_INDEX_CACHE_TIMEOUT = 300;
 
