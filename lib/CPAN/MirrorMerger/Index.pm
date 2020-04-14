@@ -6,6 +6,7 @@ use Class::Accessor::Lite ro => [qw/headers packages/], new => 1;
 
 use CPAN::MirrorMerger::PackageInfo;
 
+use IO::Compress::Gzip;
 use IO::Uncompress::Gunzip;
 
 my @WELLKNOWN_HEADERS = qw/
@@ -70,7 +71,9 @@ sub save {
 }
 
 sub _write_to {
-    my ($self, $fh) = @_;
+    my ($self, $raw_fh) = @_;
+    my $fh = IO::Compress::Gzip->new($raw_fh)
+        or die $IO::Compress::Gzip::GzipError;
 
     my %header = %{ $self->headers };
     for my $name (@WELLKNOWN_HEADERS) {
@@ -86,6 +89,9 @@ sub _write_to {
     for my $package_info (@{ $self->packages }) {
         printf $fh "%-35s %6s  %s\n", $package_info->module, $package_info->version, $package_info->path;
     }
+
+    close $fh
+        or die $IO::Compress::Gzip::GzipError;
 }
 
 1;

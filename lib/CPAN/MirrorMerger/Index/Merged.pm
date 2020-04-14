@@ -5,8 +5,7 @@ use warnings;
 use parent qw/CPAN::MirrorMerger::Index/;
 
 use Class::Accessor::Lite
-    ro => [qw/multiplex_index mirrors mirror_cache logger/],
-    new => 1;
+    ro => [qw/multiplex_index mirrors mirror_cache logger/];
 
 sub save {
     my ($self, $storage) = @_;
