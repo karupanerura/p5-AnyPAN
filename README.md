@@ -10,7 +10,7 @@ CPAN::MirrorMerger - CPAN Mirror index merger for many legacy company internal C
 
     my $merger = CPAN::MirrorMerger->new();
 
-    $merger->add_mirror('http://backpan.cpantesters.org/');
+    $merger->add_mirror('http://backpan.perl.org/');
     $merger->add_mirror('https://cpan.metacpan.org/');
 
     $merger->merge()->save(
