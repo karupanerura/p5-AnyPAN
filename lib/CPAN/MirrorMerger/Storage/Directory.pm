@@ -20,5 +20,12 @@ sub copy {
     $from_path->copy($save_path) unless $save_path->exists;
 }
 
+sub fetch {
+    my ($self, $save_key) = @_;
+    my $save_path = $self->{path}->child($save_key);
+    return unless $save_path->exists;
+    return $save_path;
+}
+
 1;
 __END__
