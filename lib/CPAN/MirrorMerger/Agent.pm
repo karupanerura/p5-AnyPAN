@@ -40,7 +40,7 @@ sub download {
         $self->logger->warn("retry request: $retry_count", { error => $e }) if $retry_count;
         $self->logger->debug("download $url to $path");
 
-        my $tempfile = Path::Tiny->tempfile();
+        my $tempfile = Path::Tiny->tempfile(UNLINK => 1);
 
         my $fh = $tempfile->openw_raw();
         my $res = $self->furl->request(

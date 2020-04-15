@@ -14,7 +14,7 @@ use CPAN::MirrorMerger::Storage::Directory;
 use CPAN::MirrorMerger::Mirror;
 use CPAN::MirrorMerger::Index;
 
-local $CPAN::MirrorMerger::DEFAULT_MIRROR_CACHE_DIR = Path::Tiny->tempdir();
+local $CPAN::MirrorMerger::DEFAULT_MIRROR_CACHE_DIR = Path::Tiny->tempdir(CLEANUP => 1);
 local $CPAN::MirrorMerger::DEFAULT_LOGGER = TestLogger->instance();
 
 my $merger = CPAN::MirrorMerger->new();
@@ -22,7 +22,7 @@ $merger->add_mirror(mirror_url('mirror1.example.test'));
 $merger->add_mirror(mirror_url('mirror2.example.test'));
 $merger->add_mirror(mirror_url('mirror3.example.test'));
 
-my $merged_dir = Path::Tiny->tempdir();
+my $merged_dir = Path::Tiny->tempdir(CLEANUP => 1);
 $merger->merge()->save(
     CPAN::MirrorMerger::Storage::Directory->new(path => $merged_dir->stringify),
 );

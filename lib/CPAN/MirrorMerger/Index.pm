@@ -60,7 +60,7 @@ sub parse {
 sub save {
     my ($self, $storage) = @_;
 
-    my $tempfile = Path::Tiny->tempfile();
+    my $tempfile = Path::Tiny->tempfile(UNKINK => 1);
 
     # write index
     my $fh = $tempfile->openw_raw();
