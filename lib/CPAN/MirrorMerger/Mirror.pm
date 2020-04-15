@@ -9,12 +9,11 @@ use Class::Accessor::Lite ro => [qw/name base_url/];
 
 sub new {
     my ($class, $url) = @_;
-    my $base_url = URI->new($url);
+    my $base_url = URI->new($url)->canonical();
 
     my $scheme = $base_url->scheme;
     my $name;
     if ($scheme eq 'http' || $scheme eq 'https' || $scheme eq 'ftp') {
-        $base_url->path_query('/'); # normalize
         $name = $base_url->host;
     } elsif ($scheme eq 'file') {
         $name = URI::Escape::uri_escape_utf8($base_url->file);
