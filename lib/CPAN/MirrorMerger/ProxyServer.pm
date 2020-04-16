@@ -176,7 +176,7 @@ __END__
 
 =head1 NAME
 
-CPAN::MirrorMerger::ProxyServer - Merged CPAN mirror package repositry server PSGI application
+CPAN::MirrorMerger::ProxyServer - Merged CPAN mirror package repository server PSGI application
 
 =head1 SYNOPSIS
 
