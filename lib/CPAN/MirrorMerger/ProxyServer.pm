@@ -65,7 +65,7 @@ sub call {
     if ($req->path =~ m!^/authors/id/([A-Z])/(\1[A-Z])/\2[A-Z]+/[^/]+$!o) {
         return $self->proxt_to_storage_or_mirrors($req)->finalize();
     } elsif ($req->path eq '/modules/02packages.details.txt.gz') {
-        return $self->proxy_to_storage($req);
+        return $self->proxy_to_storage($req)->finalize();
     }
 
     return $self->_res_404()->finalize();
