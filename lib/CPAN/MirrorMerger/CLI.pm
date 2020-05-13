@@ -4,6 +4,7 @@ use warnings;
 
 use Class::Accessor::Lite new => 1, ro => [qw/
     verbose
+    with_packages
     mirror_cache_dir
     index_cache_timeout
     request_timeout
@@ -46,6 +47,7 @@ sub create_option_parser {
 sub create_option_specs {
     return qw/
         verbose|v+
+        with-packages
         mirror-cache-dir=s
         index-cache-timeout=i
         request-timeout=i
@@ -59,6 +61,7 @@ sub convert_options {
     my ($class, $opts, $argv) = @_;
     return (
         verbose             => $opts->{'verbose'}             || 0,
+        with_packages       => $opts->{'with-packages'}       || 0,
         mirror_cache_dir    => $opts->{'mirror-cache-dir'}    || $CPAN::MirrorMerger::DEFAULT_MIRROR_CACHE_DIR,
         index_cache_timeout => $opts->{'index-cache-timeout'} || $CPAN::MirrorMerger::DEFAULT_MIRROR_INDEX_CACHE_TIMEOUT,
         request_timeout     => $opts->{'request-timeout'}     || $CPAN::MirrorMerger::DEFAULT_REQUEST_TIMEOUT,
@@ -84,7 +87,12 @@ sub run {
         $merger->add_mirror($mirror_url);
     }
 
-    $merger->merge($algorithm)->save($storage);
+    my $index = $merger->merge($algorithm);
+    if ($self->with_packages) {
+        $index->save_with_included_packages($storage);
+    } else {
+        $index->save($storage);
+    }
 }
 
 sub create_logger {

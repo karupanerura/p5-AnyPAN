@@ -21,6 +21,7 @@ cpan-mirror-merger [options] [mirror_urls ...]
    -h|--help                Brief help message
    -v|--verbose             Verbose log
    -o|--output-dir          Output directory (required)
+   --with-packages          Writes also the packages included in the merged CPAN index
    --mirror-cache-dir       Mirror cache directory (default: /tmp/CPAN-MirrorMerger)
    --index-cache-timeout    Mirror index cache timeout seconds (default: 300s)
    --request-timeout        HTTP request timeout seconds (default: 30s)

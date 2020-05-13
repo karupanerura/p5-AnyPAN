@@ -90,7 +90,7 @@ CPAN::MirrorMerger - CPAN Mirror index merger for many legacy company internal C
     $merger->add_mirror('http://backpan.perl.org/');
     $merger->add_mirror('https://cpan.metacpan.org/');
 
-    $merger->merge()->save(
+    $merger->merge()->save_with_included_packages(
         CPAN::MirrorMerger::Storage::Directory->new(path => '/tmp/merged'),
     );
 

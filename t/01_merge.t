@@ -23,7 +23,7 @@ $merger->add_mirror(mirror_url('mirror2.example.test'));
 $merger->add_mirror(mirror_url('mirror3.example.test'));
 
 my $merged_dir = Path::Tiny->tempdir(CLEANUP => 1);
-$merger->merge()->save(
+$merger->merge()->save_with_included_packages(
     CPAN::MirrorMerger::Storage::Directory->new(path => $merged_dir->stringify),
 );
 

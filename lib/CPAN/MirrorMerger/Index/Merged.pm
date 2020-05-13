@@ -7,7 +7,7 @@ use parent qw/CPAN::MirrorMerger::Index/;
 use Class::Accessor::Lite
     ro => [qw/multiplex_index mirrors mirror_cache logger/];
 
-sub save {
+sub save_with_included_packages {
     my ($self, $storage) = @_;
 
     for my $mirror (@{ $self->mirrors }) {
@@ -35,7 +35,7 @@ sub save {
             $storage->copy($package_path, $save_key);
         }
     }
-    $self->SUPER::save($storage);
+    $self->save($storage);
 }
 
 1;
