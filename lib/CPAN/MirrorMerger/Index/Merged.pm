@@ -9,9 +9,16 @@ use Class::Accessor::Lite
 
 sub save {
     my ($self, $storage) = @_;
+
     for my $mirror (@{ $self->mirrors }) {
         my $index = $self->mirror_cache->get_or_fetch_index($mirror);
+
+        my $previous_package_path = '';
         for my $package_info (@{ $index->packages }) {
+            # skip contiguous packages for performance
+            next if $previous_package_path eq $package_info->canonicalized_path();
+            $previous_package_path = $package_info->canonicalized_path();
+
             my $package_path = eval {
                 $self->mirror_cache->get_or_fetch_package($mirror, $package_info);
             };
@@ -23,6 +30,7 @@ sub save {
                 $self->logger->error("failed to fetch package @{[ $package_info->path ]} on @{[ $mirror->name ]}");
                 die $e;
             }
+
             my $save_key = $mirror->package_path($package_info->canonicalized_path);
             $storage->copy($package_path, $save_key);
         }
