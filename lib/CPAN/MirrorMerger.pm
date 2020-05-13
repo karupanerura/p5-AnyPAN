@@ -14,7 +14,7 @@ use CPAN::MirrorMerger::Mirror;
 use CPAN::MirrorMerger::MirrorCache;
 use CPAN::MirrorMerger::RetryPolicy;
 use CPAN::MirrorMerger::Logger::Null;
-use CPAN::MirrorMerger::Algorithm::Simple;
+use CPAN::MirrorMerger::Algorithm::PreferLatestVersion;
 
 our $DEFAULT_LOGGER = CPAN::MirrorMerger::Logger::Null->instance();
 our $DEFAULT_RETRY_POLICY = CPAN::MirrorMerger::RetryPolicy->new(
@@ -47,7 +47,7 @@ sub merge {
 }
 
 sub _get_default_algorithm {
-    return CPAN::MirrorMerger::Algorithm::Simple->new(
+    return CPAN::MirrorMerger::Algorithm::PreferLatestVersion->new(
         mirror_cache => _get_default_mirror_cache(),
         logger       => $DEFAULT_LOGGER,
     );

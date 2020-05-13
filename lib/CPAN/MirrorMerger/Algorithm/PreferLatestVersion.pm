@@ -1,4 +1,4 @@
-package CPAN::MirrorMerger::Algorithm::Simple;
+package CPAN::MirrorMerger::Algorithm::PreferLatestVersion;
 use strict;
 use warnings;
 

@@ -4,7 +4,7 @@ use Test::More 0.98;
 use_ok $_ for qw(
     CPAN::MirrorMerger
     CPAN::MirrorMerger::Agent
-    CPAN::MirrorMerger::Algorithm::Simple
+    CPAN::MirrorMerger::Algorithm::PreferLatestVersion
     CPAN::MirrorMerger::Index
     CPAN::MirrorMerger::Index::Merged
     CPAN::MirrorMerger::Logger

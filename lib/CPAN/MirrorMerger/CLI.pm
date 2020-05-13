@@ -22,7 +22,7 @@ use CPAN::MirrorMerger::Agent;
 use CPAN::MirrorMerger::Mirror;
 use CPAN::MirrorMerger::MirrorCache;
 use CPAN::MirrorMerger::RetryPolicy;
-use CPAN::MirrorMerger::Algorithm::Simple;
+use CPAN::MirrorMerger::Algorithm::PreferLatestVersion;
 use CPAN::MirrorMerger::Logger::Stderr;
 
 sub new_with_argv {
@@ -149,7 +149,7 @@ sub create_mirror_cache {
 sub create_algorithm {
     my ($self, %args) = @_;
 
-    my $algorithm = CPAN::MirrorMerger::Algorithm::Simple->new(%args);
+    my $algorithm = CPAN::MirrorMerger::Algorithm::PreferLatestVersion->new(%args);
     return $algorithm;
 }
 
