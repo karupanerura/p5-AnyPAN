@@ -17,7 +17,13 @@ sub copy {
     my ($self, $from_path, $save_key) = @_;
     my $save_path = $self->{path}->child($save_key);
     $save_path->parent->mkpath();
-    $from_path->copy($save_path) unless $save_path->exists;
+    $from_path->copy($save_path);
+}
+
+sub exists :method {
+    my ($self, $save_key) = @_;
+    my $save_path = $self->{path}->child($save_key);
+    return $save_path->exists;
 }
 
 sub fetch {
