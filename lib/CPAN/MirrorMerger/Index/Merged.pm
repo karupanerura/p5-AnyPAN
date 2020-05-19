@@ -19,6 +19,10 @@ sub save_with_included_packages {
             next if $previous_package_path eq $package_info->canonicalized_path();
             $previous_package_path = $package_info->canonicalized_path();
 
+            # skip exists packages for performance
+            my $save_key = $mirror->package_path($package_info->canonicalized_path);
+            next if $storage->exists($save_key);
+
             my $package_path = eval {
                 $self->mirror_cache->get_or_fetch_package($mirror, $package_info);
             };
@@ -31,7 +35,6 @@ sub save_with_included_packages {
                 die $e;
             }
 
-            my $save_key = $mirror->package_path($package_info->canonicalized_path);
             $storage->copy($package_path, $save_key);
         }
     }
