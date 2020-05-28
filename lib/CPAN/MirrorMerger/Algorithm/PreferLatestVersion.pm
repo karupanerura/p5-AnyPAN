@@ -5,7 +5,7 @@ use feature qw/fc/;
 
 use Class::Accessor::Lite ro  => [qw/mirror_cache logger/];
 
-use List::UtilsBy qw/rev_nsort_by/;
+use List::UtilsBy qw/rev_nsort_by sort_by/;
 use Time::Moment;
 use CPAN::MirrorMerger::Index::Merged;
 use CPAN::MirrorMerger::Logger::Null;
@@ -57,7 +57,7 @@ sub merge {
         'Line-Count'   => scalar keys %multiplex_index,
         'Last-Updated' => $now->strftime('%a, %d %b %Y %H:%M:%S %Z'),
     );
-    my @packages = map { $multiplex_index{$_}[0] } sort { fc $a cmp fc $b } keys %multiplex_index;
+    my @packages = map { $multiplex_index{$_}[0] } sort_by { fc } keys %multiplex_index;
 
     return CPAN::MirrorMerger::Index::Merged->new(
         headers         => \%headers,
