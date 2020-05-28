@@ -2,6 +2,10 @@ Revision history for Perl extension CPAN-MirrorMerger
 
 {{$NEXT}}
 
+0.07 2020-05-28T06:50:28Z
+
+    - fix index sort order as case insencitive
+
 0.06 2020-05-19T12:36:17Z
 
     - add exists method for storage api
