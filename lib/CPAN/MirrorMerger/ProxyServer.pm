@@ -62,7 +62,7 @@ sub call {
     }
 
     # path routing
-    if ($req->path =~ m!^/authors/id/([A-Z])/(\1[A-Z])/\2[A-Z]*/.+$!o) {
+    if ($req->path =~ m!^/authors/id/([A-Z])/(\1[A-Z])/\2[-A-Z0-9]*/.+$!o) {
         return $self->proxt_to_storage_or_mirrors($req)->finalize();
     } elsif ($req->path eq '/modules/02packages.details.txt.gz') {
         return $self->proxy_to_storage($req)->finalize();
