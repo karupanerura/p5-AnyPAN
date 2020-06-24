@@ -2,6 +2,10 @@ Revision history for Perl extension CPAN-MirrorMerger
 
 {{$NEXT}}
 
+0.08 2020-06-24T06:45:24Z
+
+    - fix proxy bug: allow to includes numbers and hyphen for PAUSE user name
+
 0.07 2020-05-28T06:50:28Z
 
     - fix index sort order as case insencitive

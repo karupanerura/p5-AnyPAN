@@ -2,7 +2,7 @@ package CPAN::MirrorMerger;
 use strict;
 use warnings;
 
-our $VERSION = "0.07";
+our $VERSION = "0.08";
 
 use Class::Accessor::Lite ro => [qw/mirrors/];
 
