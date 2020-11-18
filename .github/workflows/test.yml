@@ -6,8 +6,10 @@ jobs:
     strategy:
       matrix:
         perl:
-          - "5.30.0"
-          - "5.12.1"
+          - "5.32.0"
+          - "5.30.3"
+          - "5.28.3"
+          - "5.26.3"
     name: Perl ${{ matrix.perl }}
     steps:
       - uses: actions/checkout@v1
