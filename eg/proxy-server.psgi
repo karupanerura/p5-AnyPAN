@@ -1,10 +1,10 @@
 use strict;
 use warnings;
 
-use AnyPAN::ProxyServer;
+use AnyPAN::ReverseProxy;
 use AnyPAN::Storage::Directory;
 
-my $merger = AnyPAN::ProxyServer->new(
+my $merger = AnyPAN::ReverseProxy->new(
     storage => AnyPAN::Storage::Directory->new(path => '/path/to/merged'),
 );
 

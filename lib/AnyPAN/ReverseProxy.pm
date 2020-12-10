@@ -1,4 +1,4 @@
-package AnyPAN::ProxyServer;
+package AnyPAN::ReverseProxy;
 use strict;
 use warnings;
 
@@ -19,7 +19,7 @@ use AnyPAN::RetryPolicy::NoRetry;
 use AnyPAN::PackageInfo;
 use AnyPAN::Logger::Stderr;
 
-our $DEFAULT_LOGGER = AnyPAN::Logger::Stderr->new(level => $ENV{CPAN_SOURCE_MERGER_PROXY_LOG_LEVEL} || 'warn');
+our $DEFAULT_LOGGER = AnyPAN::Logger::Stderr->new(level => $ENV{ANYPAN_REVERSE_PROXY_LOG_LEVEL} || 'warn');
 our $DEFAULT_REQUEST_TIMEOUT = 10;
 our $DEFAULT_RETRY_POLICY = AnyPAN::RetryPolicy::NoRetry->instance();
 

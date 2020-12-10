@@ -16,7 +16,7 @@ use_ok $_ for qw(
     AnyPAN::Source
     AnyPAN::SourceCache
     AnyPAN::PackageInfo
-    AnyPAN::ProxyServer
+    AnyPAN::ReverseProxy
     AnyPAN::RetryPolicy
     AnyPAN::RetryPolicy::ExponentialBackoff
     AnyPAN::RetryPolicy::NoRetry
