@@ -9,6 +9,8 @@ __END__
 
 =encoding utf-8
 
+=for stopwords DarkPAN
+
 =head1 NAME
 
 AnyPAN - CPAN Mirror and DarkPAN merging toolkit
