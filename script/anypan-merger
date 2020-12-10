@@ -2,8 +2,8 @@
 use strict;
 use warnings;
 
-use CPAN::MirrorMerger::CLI::FileStorage;
-CPAN::MirrorMerger::CLI::FileStorage->new_with_argv(@ARGV)->run();
+use AnyPAN::CLI::FileStorage;
+AnyPAN::CLI::FileStorage->new_with_argv(@ARGV)->run();
 
 __END__
 
@@ -11,19 +11,19 @@ __END__
 
 =head1 NAME
 
-cpan-mirror-merger - CPAN Mirror merge tool
+anypan-merger - DarkPAN and CPAN mirror merging tool
 
 =head1 SYNOPSIS
 
-cpan-mirror-merger [options] [mirror_urls ...]
+anypan-merger [options] [source_urls ...]
 
  Options:
    -h|--help                Brief help message
    -v|--verbose             Verbose log
    -o|--output-dir          Output directory (required)
    --with-packages          Writes also the packages included in the merged CPAN index
-   --mirror-cache-dir       Mirror cache directory (default: /tmp/CPAN-MirrorMerger)
-   --index-cache-timeout    Mirror index cache timeout seconds (default: 300s)
+   --source-cache-dir       Source DarkPAN and CPAN mirror cache directory (default: /tmp/AnyPAN)
+   --index-cache-timeout    Source DarkPAN and CPAN mirror index cache expiration seconds (default: 300s)
    --request-timeout        HTTP request timeout seconds (default: 30s)
    --max-retries            Max retry count
    --retry-interval         Retry interval

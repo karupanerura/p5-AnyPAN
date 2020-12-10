@@ -1,9 +1,19 @@
-[![MetaCPAN Release](https://badge.fury.io/pl/AnyPAN.svg)](https://metacpan.org/release/AnyPAN) [![Actions Status](https://github.com/karupanerura/p5-CPAN-MirrorMerger/workflows/test/badge.svg)](https://github.com/karupanerura/p5-CPAN-MirrorMerger/actions)
-# NAME
+package AnyPAN;
+use strict;
+use warnings;
+
+our $VERSION = "0.08";
+
+1;
+__END__
+
+=encoding utf-8
+
+=head1 NAME
 
 AnyPAN - CPAN Mirror and DarkPAN merging toolkit
 
-# SYNOPSIS
+=head1 SYNOPSIS
 
     use AnyPAN::Merger;
     use AnyPAN::Storage::Directory;
@@ -17,17 +27,20 @@ AnyPAN - CPAN Mirror and DarkPAN merging toolkit
         AnyPAN::Storage::Directory->new(path => '/tmp/merged'),
     );
 
-# DESCRIPTION
+=head1 DESCRIPTION
 
 AnyPAN is ...
 
-# LICENSE
+=head1 LICENSE
 
 Copyright (C) karupanerura.
 
 This library is free software; you can redistribute it and/or modify
 it under the same terms as Perl itself.
 
-# AUTHOR
+=head1 AUTHOR
 
-karupanerura <karupa@cpan.org>
+karupanerura E<lt>karupa@cpan.orgE<gt>
+
+=cut
+

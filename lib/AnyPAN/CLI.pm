@@ -1,29 +1,30 @@
-package CPAN::MirrorMerger::CLI;
+package AnyPAN::CLI;
 use strict;
 use warnings;
 
 use Class::Accessor::Lite new => 1, ro => [qw/
     verbose
     with_packages
-    mirror_cache_dir
+    source_cache_dir
     index_cache_timeout
     request_timeout
     max_retries
     retry_interval
     retry_jitter_factor
-    mirror_urls
+    source_urls
 /];
 
 use Getopt::Long 2.36 ();
 use Pod::Usage qw/pod2usage/;
 
-use CPAN::MirrorMerger;
-use CPAN::MirrorMerger::Agent;
-use CPAN::MirrorMerger::Mirror;
-use CPAN::MirrorMerger::MirrorCache;
-use CPAN::MirrorMerger::RetryPolicy;
-use CPAN::MirrorMerger::Algorithm::PreferLatestVersion;
-use CPAN::MirrorMerger::Logger::Stderr;
+use AnyPAN;
+use AnyPAN::Merger;
+use AnyPAN::Agent;
+use AnyPAN::Source;
+use AnyPAN::SourceCache;
+use AnyPAN::RetryPolicy::ExponentialBackoff;
+use AnyPAN::Merger::Algorithm::PreferLatestVersion;
+use AnyPAN::Logger::Stderr;
 
 sub new_with_argv {
     my ($class, @argv) = @_;
@@ -48,7 +49,7 @@ sub create_option_specs {
     return qw/
         verbose|v+
         with-packages
-        mirror-cache-dir=s
+        source-cache-dir=s
         index-cache-timeout=i
         request-timeout=i
         max-retries=i
@@ -62,13 +63,13 @@ sub convert_options {
     return (
         verbose             => $opts->{'verbose'}             || 0,
         with_packages       => $opts->{'with-packages'}       || 0,
-        mirror_cache_dir    => $opts->{'mirror-cache-dir'}    || $CPAN::MirrorMerger::DEFAULT_MIRROR_CACHE_DIR,
-        index_cache_timeout => $opts->{'index-cache-timeout'} || $CPAN::MirrorMerger::DEFAULT_MIRROR_INDEX_CACHE_TIMEOUT,
-        request_timeout     => $opts->{'request-timeout'}     || $CPAN::MirrorMerger::DEFAULT_REQUEST_TIMEOUT,
-        max_retries         => $opts->{'max-retries'}         || $CPAN::MirrorMerger::DEFAULT_RETRY_POLICY->max_retries,
-        retry_interval      => $opts->{'retry-interval'}      || $CPAN::MirrorMerger::DEFAULT_RETRY_POLICY->interval,
-        retry_jitter_factor => $opts->{'retry-jitter-factor'} || $CPAN::MirrorMerger::DEFAULT_RETRY_POLICY->jitter_factor,
-        mirror_urls         => $argv,
+        source_cache_dir    => $opts->{'source-cache-dir'}    || $AnyPAN::Merger::DEFAULT_SOURCE_CACHE_DIR,
+        index_cache_timeout => $opts->{'index-cache-timeout'} || $AnyPAN::Merger::DEFAULT_SOURCE_INDEX_CACHE_TIMEOUT,
+        request_timeout     => $opts->{'request-timeout'}     || $AnyPAN::Merger::DEFAULT_REQUEST_TIMEOUT,
+        max_retries         => $opts->{'max-retries'}         || $AnyPAN::Merger::DEFAULT_RETRY_POLICY->max_retries,
+        retry_interval      => $opts->{'retry-interval'}      || $AnyPAN::Merger::DEFAULT_RETRY_POLICY->interval,
+        retry_jitter_factor => $opts->{'retry-jitter-factor'} || $AnyPAN::Merger::DEFAULT_RETRY_POLICY->jitter_factor,
+        source_urls         => $argv,
     );
 }
 
@@ -78,13 +79,13 @@ sub run {
     my $logger       = $self->create_logger();
     my $retry_policy = $self->create_retry_policy();
     my $agent        = $self->create_agent(logger => $logger, retry_policy => $retry_policy);
-    my $mirror_cache = $self->create_mirror_cache(logger => $logger, agent => $agent);
-    my $algorithm    = $self->create_algorithm(mirror_cache => $mirror_cache);
+    my $source_cache = $self->create_source_cache(logger => $logger, agent => $agent);
+    my $algorithm    = $self->create_algorithm(source_cache => $source_cache);
     my $storage      = $self->create_storage();
 
-    my $merger = CPAN::MirrorMerger->new();
-    for my $mirror_url (@{ $self->mirror_urls }) {
-        $merger->add_mirror($mirror_url);
+    my $merger = AnyPAN::Merger->new();
+    for my $source_url (@{ $self->source_urls }) {
+        $merger->add_source($source_url);
     }
 
     my $index = $merger->merge($algorithm);
@@ -98,7 +99,7 @@ sub run {
 sub create_logger {
     my $self = shift;
 
-    my $logger = CPAN::MirrorMerger::Logger::Stderr->new(
+    my $logger = AnyPAN::Logger::Stderr->new(
         level => $self->verbose == 0 ? 'warn'
                : $self->verbose == 1 ? 'info'
                : $self->verbose >= 2 ? 'debug'
@@ -111,7 +112,7 @@ sub create_logger {
 sub create_retry_policy {
     my $self = shift;
 
-    my $retry_policy = CPAN::MirrorMerger::RetryPolicy->new(
+    my $retry_policy = AnyPAN::RetryPolicy::ExponentialBackoff->new(
         max_retries   => $self->max_retries,
         interval      => $self->retry_interval,
         jitter_factor => $self->retry_jitter_factor,
@@ -123,8 +124,8 @@ sub create_retry_policy {
 sub create_agent {
     my ($self, %args) = @_;
 
-    my $agent = CPAN::MirrorMerger::Agent->new(
-        agent        => "CPAN::MirrorMerger/$CPAN::MirrorMerger::VERSION",
+    my $agent = AnyPAN::Agent->new(
+        agent        => "AnyPAN/$AnyPAN::VERSION",
         timeout      => $self->request_timeout,
         logger       => $args{logger},
         retry_policy => $args{retry_policy},
@@ -133,23 +134,23 @@ sub create_agent {
     return $agent;
 }
 
-sub create_mirror_cache {
+sub create_source_cache {
     my ($self, %args) = @_;
 
-    my $mirror_cache = CPAN::MirrorMerger::MirrorCache->new(
-        cache_dir           => $self->mirror_cache_dir,
+    my $source_cache = AnyPAN::SourceCache->new(
+        cache_dir           => $self->source_cache_dir,
         index_cache_timeout => $self->index_cache_timeout,
         agent               => $args{agent},
         logger              => $args{logger},
     );
 
-    return $mirror_cache;
+    return $source_cache;
 }
 
 sub create_algorithm {
     my ($self, %args) = @_;
 
-    my $algorithm = CPAN::MirrorMerger::Algorithm::PreferLatestVersion->new(%args);
+    my $algorithm = AnyPAN::Merger::Algorithm::PreferLatestVersion->new(%args);
     return $algorithm;
 }
 

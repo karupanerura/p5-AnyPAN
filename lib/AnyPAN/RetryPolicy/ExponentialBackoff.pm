@@ -1,10 +1,12 @@
-package CPAN::MirrorMerger::RetryPolicy;
+package AnyPAN::RetryPolicy::ExponentialBackoff;
 use strict;
 use warnings;
 
+use parent qw/AnyPAN::RetryPolicy/;
+
 use Time::HiRes ();
 
-use Class::Accessor::Lite ro => [qw/max_retries interval jitter_factor/], new => 1;
+use Class::Accessor::Lite ro => [qw/max_retries interval jitter_factor/];
 
 sub apply {
     my ($self, $code) = @_;
@@ -49,12 +51,6 @@ sub apply {
 
         return $wantarray ? @ret : $ret[0];
     };
-}
-
-sub apply_and_doit {
-    my $self = shift;
-    my $code = shift;
-    return $self->apply($code)->();
 }
 
 1;

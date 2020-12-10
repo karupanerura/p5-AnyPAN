@@ -1,35 +1,36 @@
-package CPAN::MirrorMerger::ProxyServer;
+package AnyPAN::ProxyServer;
 use strict;
 use warnings;
 
 use parent qw/Plack::Component/;
 
-use Plack::Util::Accessor qw/storage logger mirror_cache/;
+use Plack::Util::Accessor qw/storage logger source_cache/;
 
 use Plack::Request;
 use Plack::Response;
 use Plack::MIME;
 use Path::Tiny;
 
-use CPAN::MirrorMerger;
-use CPAN::MirrorMerger::Mirror;
-use CPAN::MirrorMerger::MirrorCache;
-use CPAN::MirrorMerger::RetryPolicy::NoRetry;
-use CPAN::MirrorMerger::PackageInfo;
-use CPAN::MirrorMerger::Logger::Stderr;
+use AnyPAN;
+use AnyPAN::Merger;
+use AnyPAN::Source;
+use AnyPAN::SourceCache;
+use AnyPAN::RetryPolicy::NoRetry;
+use AnyPAN::PackageInfo;
+use AnyPAN::Logger::Stderr;
 
-our $DEFAULT_LOGGER = CPAN::MirrorMerger::Logger::Stderr->new(level => $ENV{CPAN_MIRROR_MERGER_PROXY_LOG_LEVEL} || 'warn');
+our $DEFAULT_LOGGER = AnyPAN::Logger::Stderr->new(level => $ENV{CPAN_SOURCE_MERGER_PROXY_LOG_LEVEL} || 'warn');
 our $DEFAULT_REQUEST_TIMEOUT = 10;
-our $DEFAULT_RETRY_POLICY = CPAN::MirrorMerger::RetryPolicy::NoRetry->instance();
+our $DEFAULT_RETRY_POLICY = AnyPAN::RetryPolicy::NoRetry->instance();
 
 sub new {
     my $class = shift;
     my $self = $class->SUPER::new(@_);
-    $self->{mirrors} = [];
+    $self->{sources} = [];
 
     # set default
     $self->{logger} ||= $DEFAULT_LOGGER;
-    $self->{mirror_cache} ||= _get_default_mirror_cache($self->{logger});
+    $self->{source_cache} ||= _get_default_source_cache($self->{logger});
 
     return $self;
 }
@@ -40,16 +41,16 @@ sub prepare_app {
         die "storage is required";
     }
 
-    unless (@{ $self->{mirrors} }) {
-        die "mirrors are required";
+    unless (@{ $self->{sources} }) {
+        die "sources are required";
     }
 }
 
-sub add_mirror {
-    my ($self, $mirror_url) = @_;
-    my $mirror = CPAN::MirrorMerger::Mirror->new($mirror_url);
-    $self->logger->debug("add @{[ $mirror->name ]} as mirror backend");
-    push @{ $self->{mirrors} } => $mirror;
+sub add_source {
+    my ($self, $source_url) = @_;
+    my $source = AnyPAN::Source->new($source_url);
+    $self->logger->debug("add @{[ $source->name ]} as source");
+    push @{ $self->{sources} } => $source;
 }
 
 sub call {
@@ -63,7 +64,7 @@ sub call {
 
     # path routing
     if ($req->path =~ m!^/authors/id/([A-Z])/(\1[A-Z])/\2[-A-Z0-9]*/.+$!o) {
-        return $self->proxt_to_storage_or_mirrors($req)->finalize();
+        return $self->proxt_to_storage_or_sources($req)->finalize();
     } elsif ($req->path eq '/modules/02packages.details.txt.gz') {
         return $self->proxy_to_storage($req)->finalize();
     }
@@ -71,7 +72,7 @@ sub call {
     return $self->_res_404()->finalize();
 }
 
-sub proxt_to_storage_or_mirrors {
+sub proxt_to_storage_or_sources {
     my ($self, $req) = @_;
 
     # try proxy to storage
@@ -80,26 +81,26 @@ sub proxt_to_storage_or_mirrors {
 
     # remove "/authors/id/" (e.g. D/DU/DUMMY/Foo.tar.gz)
     my $path = substr $req->path, length "/authors/id/";
-    my $package_info = CPAN::MirrorMerger::PackageInfo->new(path => $path);
+    my $package_info = AnyPAN::PackageInfo->new(path => $path);
     my $content_type = Plack::MIME->mime_type($path);
-    for my $mirror (@{ $self->{mirrors} }) {
-        # fetch from mirror
+    for my $source (@{ $self->{sources} }) {
+        # fetch from source
         my $package_path = eval {
-            $self->mirror_cache->get_or_fetch_package($mirror, $package_info)
+            $self->source_cache->get_or_fetch_package($source, $package_info)
         };
         if (my $e = $@) {
-            if (CPAN::MirrorMerger::Agent::Exception::NotFound->caught($e)) {
-                $self->logger->debug("skip package $path on @{[ $mirror->name ]}");
+            if (AnyPAN::Agent::Exception::NotFound->caught($e)) {
+                $self->logger->debug("skip package $path on @{[ $source->name ]}");
                 next; # skip it
             }
-            $self->logger->error("failed to fetch package $path on @{[ $mirror->name ]}");
+            $self->logger->error("failed to fetch package $path on @{[ $source->name ]}");
             die $e;
         }
 
-        $self->logger->debug("found @{[ $req->path ]} from @{[ $mirror->name ]}");
+        $self->logger->debug("found @{[ $req->path ]} from @{[ $source->name ]}");
 
         # save to storage
-        my $save_key = $mirror->package_path($package_info->canonicalized_path);
+        my $save_key = $source->package_path($package_info->canonicalized_path);
         $self->storage->copy($package_path, $save_key);
 
         # create response
@@ -147,11 +148,11 @@ sub _res_simple {
     ], $content);
 }
 
-sub _get_default_mirror_cache {
+sub _get_default_source_cache {
     my $logger = shift;
-    return CPAN::MirrorMerger::MirrorCache->new(
-        cache_dir           => $CPAN::MirrorMerger::DEFAULT_MIRROR_CACHE_DIR,
-        index_cache_timeout => $CPAN::MirrorMerger::DEFAULT_MIRROR_INDEX_CACHE_TIMEOUT,
+    return AnyPAN::SourceCache->new(
+        cache_dir           => $AnyPAN::Merger::DEFAULT_SOURCE_CACHE_DIR,
+        index_cache_timeout => $AnyPAN::Merger::DEFAULT_SOURCE_INDEX_CACHE_TIMEOUT,
         agent               => _get_default_agent($logger),
         logger              => $logger,
     );
@@ -159,8 +160,8 @@ sub _get_default_mirror_cache {
 
 sub _get_default_agent {
     my $logger = shift;
-    return CPAN::MirrorMerger::Agent->new(
-        agent        => __PACKAGE__."/$CPAN::MirrorMerger::VERSION",
+    return AnyPAN::Agent->new(
+        agent        => __PACKAGE__."/$AnyPAN::VERSION",
         timeout      => $DEFAULT_REQUEST_TIMEOUT,
         logger       => $logger,
         retry_policy => $DEFAULT_RETRY_POLICY,
@@ -176,19 +177,19 @@ __END__
 
 =head1 NAME
 
-CPAN::MirrorMerger::ProxyServer - Merged CPAN mirror package repository server PSGI application
+AnyPAN::ProxyServer - Merged DarkPAN proxy server PSGI application
 
 =head1 SYNOPSIS
 
-    use CPAN::MirrorMerger::ProxyServer;
-    use CPAN::MirrorMerger::Storage::Directory;
+    use AnyPAN::ProxyServer;
+    use AnyPAN::Storage::Directory;
 
-    my $merger = CPAN::MirrorMerger::ProxyServer->new(
-        storage => CPAN::MirrorMerger::Storage::Directory->new(path => '/tmp/merged'),
+    my $merger = AnyPAN::ProxyServer->new(
+        storage => AnyPAN::Storage::Directory->new(path => '/tmp/merged'),
     );
 
-    $merger->add_mirror('http://backpan.perl.org/');
-    $merger->add_mirror('https://cpan.metacpan.org/');
+    $merger->add_source('http://backpan.perl.org/');
+    $merger->add_source('https://cpan.metacpan.org/');
 
     $merger->to_app();
 

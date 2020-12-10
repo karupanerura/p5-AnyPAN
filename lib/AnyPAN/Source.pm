@@ -1,4 +1,4 @@
-package CPAN::MirrorMerger::Mirror;
+package AnyPAN::Source;
 use strict;
 use warnings;
 
@@ -18,7 +18,7 @@ sub new {
     } elsif ($scheme eq 'file') {
         $name = URI::Escape::uri_escape_utf8($base_url->file);
     } else {
-        die "Unknown mirror scheme: $url";
+        die "Unknown source URL scheme: $url";
     }
 
     bless {

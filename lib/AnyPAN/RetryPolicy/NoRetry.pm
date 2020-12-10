@@ -1,8 +1,8 @@
-package CPAN::MirrorMerger::RetryPolicy::NoRetry;
+package AnyPAN::RetryPolicy::NoRetry;
 use strict;
 use warnings;
 
-use parent qw/CPAN::MirrorMerger::RetryPolicy/;
+use parent qw/AnyPAN::RetryPolicy/;
 
 my $_INSTANCE = __PACKAGE__->new();
 sub instance { $_INSTANCE }

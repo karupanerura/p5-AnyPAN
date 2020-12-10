@@ -1,10 +1,10 @@
-package CPAN::MirrorMerger::PackageInfo;
+package AnyPAN::PackageInfo;
 use strict;
 use warnings;
 
 use version;
 
-use Class::Accessor::Lite ro => [qw/mirror module path/], new => 1;
+use Class::Accessor::Lite ro => [qw/source module path/], new => 1;
 
 my $ZERO_VERSION = version->declare('0.000_000');
 
