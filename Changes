@@ -1,6 +1,8 @@
-Revision history for Perl extension CPAN-MirrorMerger
+Revision history for Perl extension AnyPAN
 
 {{$NEXT}}
+
+    - Rename to AnyPAN from CPAN::MirrorMerger (#1)
 
 0.08 2020-06-24T06:45:24Z
 
