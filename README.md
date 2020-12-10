@@ -1,4 +1,4 @@
-[![MetaCPAN Release](https://badge.fury.io/pl/AnyPAN.svg)](https://metacpan.org/release/AnyPAN) [![Actions Status](https://github.com/karupanerura/p5-CPAN-MirrorMerger/workflows/test/badge.svg)](https://github.com/karupanerura/p5-CPAN-MirrorMerger/actions)
+[![MetaCPAN Release](https://badge.fury.io/pl/AnyPAN.svg)](https://metacpan.org/release/AnyPAN) [![Actions Status](https://github.com/karupanerura/p5-AnyPAN/workflows/test/badge.svg)](https://github.com/karupanerura/p5-AnyPAN/actions)
 # NAME
 
 AnyPAN - CPAN Mirror and DarkPAN merging toolkit

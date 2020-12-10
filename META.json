@@ -74,13 +74,13 @@
    "release_status" : "unstable",
    "resources" : {
       "bugtracker" : {
-         "web" : "https://github.com/karupanerura/p5-CPAN-MirrorMerger/issues"
+         "web" : "https://github.com/karupanerura/p5-AnyPAN/issues"
       },
-      "homepage" : "https://github.com/karupanerura/p5-CPAN-MirrorMerger",
+      "homepage" : "https://github.com/karupanerura/p5-AnyPAN",
       "repository" : {
          "type" : "git",
-         "url" : "git://github.com/karupanerura/p5-CPAN-MirrorMerger.git",
-         "web" : "https://github.com/karupanerura/p5-CPAN-MirrorMerger"
+         "url" : "git://github.com/karupanerura/p5-AnyPAN.git",
+         "web" : "https://github.com/karupanerura/p5-AnyPAN"
       }
    },
    "version" : "0.08",
