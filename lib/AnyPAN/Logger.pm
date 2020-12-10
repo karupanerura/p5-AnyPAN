@@ -1,4 +1,4 @@
-package CPAN::MirrorMerger::Logger;
+package AnyPAN::Logger;
 use strict;
 use warnings;
 

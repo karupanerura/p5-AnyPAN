@@ -1,10 +1,10 @@
-package CPAN::MirrorMerger::Index;
+package AnyPAN::Index;
 use strict;
 use warnings;
 
 use Class::Accessor::Lite ro => [qw/headers packages/], new => 1;
 
-use CPAN::MirrorMerger::PackageInfo;
+use AnyPAN::PackageInfo;
 
 use IO::Compress::Gzip;
 use IO::Uncompress::Gunzip;
@@ -21,7 +21,7 @@ my @WELLKNOWN_HEADERS = qw/
 /;
 
 sub parse {
-    my ($class, $index_path, $mirror) = @_;
+    my ($class, $index_path, $source) = @_;
 
     my $fh = IO::Uncompress::Gunzip->new($index_path->openr_raw);
 
@@ -42,8 +42,8 @@ sub parse {
         } elsif ($context eq 'index') {
             my ($module, $version, $path) = split /\s+/, $line;
 
-            push @packages => CPAN::MirrorMerger::PackageInfo->new(
-                mirror  => $mirror,
+            push @packages => AnyPAN::PackageInfo->new(
+                source  => $source,
                 module  => $module,
                 version => $version,
                 path    => $path,

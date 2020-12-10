@@ -1,5 +1,5 @@
 {
-   "abstract" : "CPAN Mirror index merger for many legacy company internal CPAN mirrors.",
+   "abstract" : "CPAN Mirror and DarkPAN merging toolkit",
    "author" : [
       "karupanerura <karupa@cpan.org>"
    ],
@@ -12,7 +12,7 @@
       "url" : "http://search.cpan.org/perldoc?CPAN::Meta::Spec",
       "version" : 2
    },
-   "name" : "CPAN-MirrorMerger",
+   "name" : "AnyPAN",
    "no_index" : {
       "directory" : [
          "t",

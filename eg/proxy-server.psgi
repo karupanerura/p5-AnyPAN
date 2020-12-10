@@ -1,13 +1,13 @@
 use strict;
 use warnings;
 
-use CPAN::MirrorMerger::ProxyServer;
-use CPAN::MirrorMerger::Storage::Directory;
+use AnyPAN::ProxyServer;
+use AnyPAN::Storage::Directory;
 
-my $merger = CPAN::MirrorMerger::ProxyServer->new(
-    storage => CPAN::MirrorMerger::Storage::Directory->new(path => '/path/to/merged'),
+my $merger = AnyPAN::ProxyServer->new(
+    storage => AnyPAN::Storage::Directory->new(path => '/path/to/merged'),
 );
 
-$merger->add_mirror('https://cpan.metacpan.org/');
+$merger->add_source('https://cpan.metacpan.org/');
 
 $merger->to_app();

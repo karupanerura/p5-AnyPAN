@@ -3,16 +3,16 @@ use strict;
 use warnings;
 
 use Exporter 5.57 'import';
-our @EXPORT_OK = qw/mirror_url/;
+our @EXPORT_OK = qw/source_url/;
 
 use Path::Tiny ();
 use FindBin ();
 
-my $mirror_dir = Path::Tiny->new($FindBin::Bin)->child('testdata', 'mirrors');
+my $source_dir = Path::Tiny->new($FindBin::Bin)->child('testdata', 'sources');
 
-sub mirror_url {
+sub source_url {
     my $name = shift;
-    return 'file://'.$mirror_dir->child($name);
+    return 'file://'.$source_dir->child($name);
 }
 
 1;

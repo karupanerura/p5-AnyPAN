@@ -1,9 +1,9 @@
-package CPAN::MirrorMerger::Logger::Null;
+package AnyPAN::Logger::Null;
 use strict;
 use warnings;
 use feature qw/say/;
 
-use parent qw/CPAN::MirrorMerger::Logger/;
+use parent qw/AnyPAN::Logger/;
 
 my $_INSTANCE = __PACKAGE__->new(level => 'error');
 

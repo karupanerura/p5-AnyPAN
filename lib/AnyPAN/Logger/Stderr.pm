@@ -1,9 +1,9 @@
-package CPAN::MirrorMerger::Logger::Stderr;
+package AnyPAN::Logger::Stderr;
 use strict;
 use warnings;
 use feature qw/say/;
 
-use parent qw/CPAN::MirrorMerger::Logger/;
+use parent qw/AnyPAN::Logger/;
 
 sub write_log {
     my ($self, $msg) = @_;

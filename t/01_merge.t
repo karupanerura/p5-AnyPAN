@@ -4,42 +4,42 @@ use warnings;
 use Test2::V0;
 
 use lib 't/lib';
-use TestUtil qw/mirror_url/;
+use TestUtil qw/source_url/;
 use TestLogger;
 
 use Path::Tiny ();
-use CPAN::MirrorMerger;
-use CPAN::MirrorMerger::Storage::Directory;
+use AnyPAN::Merger;
+use AnyPAN::Storage::Directory;
 
-use CPAN::MirrorMerger::Mirror;
-use CPAN::MirrorMerger::Index;
+use AnyPAN::Source;
+use AnyPAN::Index;
 
-local $CPAN::MirrorMerger::DEFAULT_MIRROR_CACHE_DIR = Path::Tiny->tempdir(CLEANUP => 1);
-local $CPAN::MirrorMerger::DEFAULT_LOGGER = TestLogger->instance();
+local $AnyPAN::Merger::DEFAULT_SOURCE_CACHE_DIR = Path::Tiny->tempdir(CLEANUP => 1);
+local $AnyPAN::Merger::DEFAULT_LOGGER = TestLogger->instance();
 
-my $merger = CPAN::MirrorMerger->new();
-$merger->add_mirror(mirror_url('mirror1.example.test'));
-$merger->add_mirror(mirror_url('mirror2.example.test'));
-$merger->add_mirror(mirror_url('mirror3.example.test'));
+my $merger = AnyPAN::Merger->new();
+$merger->add_source(source_url('mirror1.example.test'));
+$merger->add_source(source_url('mirror2.example.test'));
+$merger->add_source(source_url('mirror3.example.test'));
 
 my $merged_dir = Path::Tiny->tempdir(CLEANUP => 1);
 $merger->merge()->save_with_included_packages(
-    CPAN::MirrorMerger::Storage::Directory->new(path => $merged_dir->stringify),
+    AnyPAN::Storage::Directory->new(path => $merged_dir->stringify),
 );
 
-my $mirror = CPAN::MirrorMerger::Mirror->new('file://'.$merged_dir);
+my $source = AnyPAN::Source->new('file://'.$merged_dir);
 my $index_path = $merged_dir->child('modules', '02packages.details.txt.gz');
-my $index = CPAN::MirrorMerger::Index->parse($index_path, $mirror);
+my $index = AnyPAN::Index->parse($index_path, $source);
 is $index->packages, array {
     item object {
-        call mirror  => $mirror;
+        call source  => $source;
         call module  => 'Foo::Bar';
         call version => '0.02';
         call path    => 'D/DU/DUMMY/Foo-Bar-0.02.tar.gz';
         end();
     };
     item object {
-        call mirror  => $mirror;
+        call source  => $source;
         call module  => 'Hoge::Fuga';
         call version => '0.01';
         call path    => 'D/DU/DUMMY/Hoge-Fuga-0.01.tar.gz';

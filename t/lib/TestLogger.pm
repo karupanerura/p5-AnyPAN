@@ -2,7 +2,7 @@ package TestLogger;
 use strict;
 use warnings;
 
-use parent qw/CPAN::MirrorMerger::Logger/;
+use parent qw/AnyPAN::Logger/;
 
 use Test2::API qw/context/;
 

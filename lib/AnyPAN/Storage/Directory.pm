@@ -1,4 +1,4 @@
-package CPAN::MirrorMerger::Storage::Directory;
+package AnyPAN::Storage::Directory;
 use strict;
 use warnings;
 use utf8;

@@ -1,4 +1,4 @@
-package CPAN::MirrorMerger::Agent;
+package AnyPAN::Agent;
 use strict;
 use warnings;
 
@@ -7,12 +7,12 @@ use Class::Accessor::Lite ro => [qw/furl retry_policy logger/];
 use Furl;
 use Furl::Response;
 use Path::Tiny ();
-use CPAN::MirrorMerger::Logger::Null;
+use AnyPAN::Logger::Null;
 
 sub new {
     my ($class, %args) = @_;
     my $retry_policy = delete $args{retry_policy};
-    my $logger = delete $args{logger} || CPAN::MirrorMerger::Logger::Null->instance();
+    my $logger = delete $args{logger} || AnyPAN::Logger::Null->instance();
     bless {
         furl => Furl->new(%args),
         retry_policy => $retry_policy,
@@ -54,7 +54,7 @@ sub download {
         unless ($res->is_success) {
             $self->logger->debug("error status: @{[ $res->status_line ]}");
             if ($res->status == 404) {
-                CPAN::MirrorMerger::Agent::Exception::NotFound->throw(
+                AnyPAN::Agent::Exception::NotFound->throw(
                     message => "Failed to download: $url (@{[ $res->status_line ]})",
                 );
             }
@@ -68,7 +68,7 @@ sub download {
 }
 
 package # hide from PAUSE
-    CPAN::MirrorMerger::Agent::Exception::NotFound;
+    AnyPAN::Agent::Exception::NotFound;
 
 use parent qw/Exception::Tiny/;
 
