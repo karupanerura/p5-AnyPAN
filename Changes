@@ -2,6 +2,8 @@ Revision history for Perl extension AnyPAN
 
 {{$NEXT}}
 
+0.09 2020-12-10T17:43:17Z
+
     - Rename to AnyPAN from CPAN::MirrorMerger (#1)
 
 0.08 2020-06-24T06:45:24Z
